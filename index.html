@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixelhospitalet — Video, innhold og AI-agenter</title>
+<link rel="icon" href="assets/favicon/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="assets/favicon/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Jura:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #00589A;
+    --green: #7FCC2B;
+    --navy: #002D50;
+    --light-blue: #4A8FC2;
+    --soft-green: #B8E68C;
+    --charcoal: #2D3748;
+    --steel: #718096;
+    --slate: #52606D;      /* brødtekst på lyse flater og rutenett (kontrast 5,6:1) */
+    --cloud: #E2E8F0;
+    --snow: #F7FAFC;
+    --white: #FFFFFF;
+    --grid-bg: #E9EFF1;    /* dempet utgave av 2010-bunnen #cdd8da */
+    --grid-line: #F8FBFC;  /* dempet utgave av 2010-linjene #e3eef0 */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--charcoal);
+    line-height: 1.6;
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Navigation ────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 1px 12px rgba(0,0,0,0.06); }
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo { height: 36px; }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--steel);
+    text-decoration: none;
+    letter-spacing: 0.2px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta {
+    background: var(--blue) !important;
+    color: var(--white) !important;
+    padding: 10px 24px !important;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--navy) !important; }
+
+  /* ─── Hero ──────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 32px 80px;
+    position: relative;
+  }
+  .hero-content {
+    max-width: 720px;
+    text-align: center;
+  }
+  .hero-label {
+    font-family: 'Jura', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    line-height: 1.12;
+    color: var(--navy);
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 span { color: var(--blue); }
+  .hero p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--steel);
+    max-width: 560px;
+    margin: 0 auto 40px;
+    font-weight: 300;
+  }
+  .hero-cta-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: var(--blue);
+    color: var(--white);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--navy); transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--blue);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: 1.5px solid var(--cloud);
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--blue); background: var(--snow); }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    font-size: 12px;
+    letter-spacing: 1px;
+    opacity: 0.5;
+    animation: fadeInUp 1s ease 1s both;
+  }
+  .scroll-dot {
+    width: 2px;
+    height: 24px;
+    background: linear-gradient(to bottom, var(--steel), transparent);
+  }
+
+  /* ─── Section Base ──────────────────────────── */
+  section { padding: 100px 32px; }
+  .container { max-width: 1120px; margin: 0 auto; }
+  /* Rutenett fra pixelhospitalet.no (2010), dempet */
+  .grid-bg {
+    background-color: var(--grid-bg);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+  .section-label {
+    font-family: 'Jura', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+  .section-desc {
+    font-size: 17px;
+    color: var(--slate);
+    font-weight: 400;
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ─── Services ──────────────────────────────── */
+  .services-header { margin-bottom: 64px; }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .service-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 40px;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .service-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.06); }
+  .service-card:hover::before { opacity: 1; }
+  .service-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+  .service-icon.ai { background: rgba(0, 88, 154, 0.08); color: var(--blue); }
+  .service-icon.marketing { background: rgba(127, 204, 43, 0.12); color: var(--green); }
+  .service-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .service-card p {
+    font-size: 15px;
+    color: var(--steel);
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+  .service-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .service-list li {
+    font-size: 14px;
+    color: var(--charcoal);
+    padding-left: 20px;
+    position: relative;
+  }
+  .service-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  /* Løsninger vi har bygget (roterende eksempler) */
+  .showcase {
+    margin-top: 32px;
+    padding: 40px;
+    background: var(--navy);
+    border-radius: 12px;
+    color: var(--white);
+  }
+  .showcase-label {
+    font-family: 'Jura', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 20px;
+  }
+  .showcase-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .showcase-tab {
+    position: relative;
+    overflow: hidden;
+    padding: 9px 18px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.75);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
+  }
+  .showcase-tab:hover { color: var(--white); border-color: rgba(255,255,255,0.45); }
+  .showcase-tab:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  .showcase-tab[aria-selected="true"] {
+    color: var(--navy);
+    background: var(--green);
+    border-color: var(--green);
+    font-weight: 600;
+  }
+  .showcase-tab[aria-selected="true"]::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(0,45,80,0.35);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  .showcase.is-running .showcase-tab[aria-selected="true"]::after {
+    animation: showcase-progress 7s linear forwards;
+  }
+  .showcase.is-paused .showcase-tab[aria-selected="true"]::after {
+    animation-play-state: paused;
+  }
+  @keyframes showcase-progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  .showcase-panel.is-active { animation: showcase-in 0.4s ease both; }
+  @keyframes showcase-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .showcase-panel h3 {
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 24px;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+  .showcase-steps {
+    list-style: none;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .showcase-steps li {
+    position: relative;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.85);
+    font-weight: 300;
+  }
+  .showcase-steps li:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -30px;
+    top: 22px;
+    color: var(--green);
+    font-size: 18px;
+  }
+  .showcase-step-number {
+    display: block;
+    font-family: 'Jura', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .showcase-panel.is-active { animation: none; }
+    .showcase-tab[aria-selected="true"]::after { display: none; }
+  }
+
+  /* ─── Approach / Why Us ─────────────────────── */
+  .approach { background: var(--white); }
+  .approach-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 64px;
+  }
+  .approach-text .section-desc { margin-bottom: 32px; }
+  .approach-values {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .value-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .value-num {
+    font-family: 'Jura', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+    min-width: 40px;
+  }
+  .value-content h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .value-content p {
+    font-size: 14px;
+    color: var(--steel);
+    line-height: 1.6;
+  }
+
+  /* Stats visual */
+  .approach-visual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .stat-card {
+    background: var(--snow);
+    border-radius: 12px;
+    padding: 32px 28px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.03);
+  }
+  .stat-card:first-child { grid-column: span 2; background: var(--navy); }
+  .stat-card:first-child .stat-number { color: var(--green); }
+  .stat-card:first-child .stat-label { color: rgba(255,255,255,0.7); }
+  .stat-number {
+    font-family: 'Jura', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--steel);
+    font-weight: 500;
+  }
+
+  /* ─── Clients / Trust ───────────────────────── */
+  .trust {
+    text-align: center;
+  }
+  .trust-header { margin-bottom: 48px; }
+  .trust-header .section-desc { margin: 0 auto; }
+  .trust-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px 64px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .trust-logo {
+    height: 36px;
+    width: auto;
+    filter: grayscale(1);
+    opacity: 0.55;
+    transition: filter 0.3s, opacity 0.3s;
+  }
+  .trust-logo:hover { filter: none; opacity: 1; }
+  .client-marquee {
+    display: grid;
+    gap: 12px;
+    margin: 0 auto 56px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .marquee-row {
+    display: flex;
+    width: max-content;
+    animation: marquee 32s linear infinite;
+  }
+  .marquee-row.reverse { animation-direction: reverse; }
+  .client-marquee:hover .marquee-row { animation-play-state: paused; }
+  .marquee-group { display: flex; align-items: center; list-style: none; }
+  .marquee-item {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .marquee-item::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    margin: 0 28px;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .client-marquee { -webkit-mask-image: none; mask-image: none; }
+    .marquee-row { animation: none; width: auto; }
+    .marquee-group { flex-wrap: wrap; justify-content: center; row-gap: 8px; }
+    .marquee-group[aria-hidden="true"] { display: none; }
+  }
+  .testimonial {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px;
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .testimonial blockquote {
+    font-size: 17px;
+    font-style: italic;
+    color: var(--charcoal);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+  .testimonial blockquote::before {
+    content: '\201C';
+    font-size: 48px;
+    color: var(--green);
+    line-height: 0;
+    vertical-align: -16px;
+    margin-right: 4px;
+    font-style: normal;
+    font-weight: 700;
+  }
+  .testimonial-author {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .testimonial-role {
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  /* ─── Contact / CTA ─────────────────────────── */
+  .contact {
+    background: var(--navy);
+    color: var(--white);
+    text-align: center;
+  }
+  .contact .section-label { color: var(--green); }
+  .contact .section-title { color: var(--white); }
+  .contact .section-desc {
+    color: rgba(255,255,255,0.6);
+    margin: 0 auto 40px;
+  }
+  .contact-form {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .contact-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
+  }
+  .contact-field { display: flex; flex-direction: column; gap: 6px; }
+  .contact-field.full { grid-column: 1 / -1; }
+  .contact-field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.75);
+  }
+  .contact-field .optional { font-weight: 300; color: rgba(255,255,255,0.45); }
+  .contact-field input,
+  .contact-field textarea {
+    width: 100%;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+    color: var(--white);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .contact-field textarea { min-height: 140px; resize: vertical; }
+  .contact-field input:focus,
+  .contact-field textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    background: rgba(255,255,255,0.1);
+  }
+  .contact-honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .contact-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .contact-privacy { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .contact-form .btn-primary { background: var(--green); color: var(--navy); }
+  .contact-form .btn-primary:hover { background: var(--soft-green); }
+  .contact-form .btn-primary:disabled { opacity: 0.6; cursor: wait; transform: none; }
+  .contact-status { margin-top: 16px; font-size: 15px; min-height: 1em; }
+  .contact-status.ok { color: var(--green); font-size: 18px; font-weight: 500; text-align: center; }
+  .contact-status.error { color: #FFB4A8; }
+
+  /* ─── Footer ────────────────────────────────── */
+  footer {
+    background: var(--navy);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 32px;
+    text-align: center;
+  }
+  footer p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ─── Animations ────────────────────────────── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── Mobile Menu ───────────────────────────── */
+  .mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .mobile-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--charcoal);
+    margin: 5px 0;
+    transition: 0.3s;
+  }
+
+  /* ─── Responsive ────────────────────────────── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .mobile-toggle { display: block; }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      padding: 24px 32px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      gap: 20px;
+    }
+    .hero { min-height: auto; padding: 140px 24px 80px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .approach-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+    .approach-visual { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .stat-card { padding: 24px 12px; }
+    .stat-number { font-size: 34px; }
+    .service-card { padding: 28px; }
+    .showcase { padding: 28px 24px; }
+    .contact-form-grid { grid-template-columns: minmax(0, 1fr); }
+    .contact-form-footer { flex-direction: column-reverse; align-items: stretch; text-align: center; }
+    .contact-form .btn-primary { justify-content: center; }
+    .showcase-tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin: 0 -24px 28px;
+      padding: 0 24px 4px;
+      scrollbar-width: none;
+    }
+    .showcase-tabs::-webkit-scrollbar { display: none; }
+    .showcase-steps { grid-template-columns: 1fr; grid-auto-flow: row; gap: 20px; }
+    .showcase-steps li { padding-left: 36px; }
+    .showcase-step-number { position: absolute; left: 0; top: 2px; }
+    .showcase-steps li:not(:last-child)::after { content: none; }
+    .marquee-item { font-size: 16px; }
+    .marquee-item::after { margin: 0 18px; }
+    section { padding: 72px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav id="nav">
+  <div class="nav-inner">
+    <img src="assets/logo/pixelhospitalet-logo.png" alt="Pixelhospitalet" class="nav-logo">
+    <div class="nav-links" id="navLinks">
+      <a href="#tjenester">Tjenester</a>
+      <a href="#om-oss">Om oss</a>
+      <a href="#kunder">Kunder</a>
+      <a href="#kontakt" class="nav-cta">Ta kontakt</a>
+    </div>
+    <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content fade-in">
+    <div class="hero-label">Innhold og AI-agenter</div>
+    <h1>Vi gjør kompleks teknologi til <span>konkrete resultater</span></h1>
+    <p>Pixelhospitalet hjelper norske bedrifter med video og innhold som når frem, og med AI-agenter og apper som gjør jobben. Vi bruker kunstig intelligens (AI) der den gir vekst og effektivitet.</p>
+    <div class="hero-cta-group">
+      <a href="#kontakt" class="btn-primary">
+        Book en samtale
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#tjenester" class="btn-secondary">Se våre tjenester</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-dot"></div>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="services grid-bg" id="tjenester">
+  <div class="container">
+    <div class="services-header fade-in">
+      <div class="section-label">Tjenester</div>
+      <h2 class="section-title">Kreativt innhold og AI-agenter som gjør jobben</h2>
+      <p class="section-desc">Vi kombinerer lang erfaring med video, foto, tekst og kampanjer med AI-agenter og apper vi bygger selv. Du får mer gjort, raskere og med mindre manuelt arbeid.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-in">
+        <div class="service-icon marketing">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Innhold og markedsføring</h3>
+        <p>Vi produserer video, foto og tekst, og bruker innholdet både organisk og i betalte kampanjer.</p>
+        <ul class="service-list">
+          <li>Video og film</li>
+          <li>Foto</li>
+          <li>Tekst og budskap</li>
+          <li>Annonsegrafikk og karuseller</li>
+          <li>Organisk innhold og betalt annonsering</li>
+          <li>Kampanjer i stor skala, per produkt, sted eller leverandør</li>
+          <li>Merkevare og visuell profil</li>
+        </ul>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon ai">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M16 15a4 4 0 0 1 4 4v2H4v-2a4 4 0 0 1 4-4"/><circle cx="12" cy="6" r="1" fill="currentColor"/><path d="M9 11l3 3 3-3"/></svg>
+        </div>
+        <h3>AI-agenter og apper</h3>
+        <p>Vi bygger AI-agenter og apper som gjør jobben for deg. De henter informasjon, tar beslutninger innenfor rammene du setter og utfører oppgaver på tvers av systemene dine.</p>
+        <ul class="service-list">
+          <li>AI-agenter som løser oppgaver fra start til slutt</li>
+          <li>Skreddersydde apper og interne verktøy</li>
+          <li>Automatisk produksjon av video og annonser fra maler</li>
+          <li>Arbeidsflyter for bestilling, publisering og oppfølging</li>
+          <li>AI-assistenter som skriver i din merkevares tone</li>
+          <li>Rådgivning og opplæring</li>
+        </ul>
+      </div>
+    </div>
+    <div class="showcase fade-in" id="showcase">
+      <div class="showcase-label">Eksempler på løsninger vi har bygget</div>
+      <div class="showcase-tabs" role="tablist" aria-label="Eksempler på løsninger vi har bygget">
+        <button class="showcase-tab" role="tab" id="showcase-tab-5" aria-controls="showcase-panel-5" aria-selected="true">Fra data til distribusjon</button>
+        <button class="showcase-tab" role="tab" id="showcase-tab-1" aria-controls="showcase-panel-1" aria-selected="false" tabindex="-1">Produktdata og SEO</button>
+        <button class="showcase-tab" role="tab" id="showcase-tab-2" aria-controls="showcase-panel-2" aria-selected="false" tabindex="-1">App for fotografer</button>
+        <button class="showcase-tab" role="tab" id="showcase-tab-3" aria-controls="showcase-panel-3" aria-selected="false" tabindex="-1">Videoautomatisering</button>
+        <button class="showcase-tab" role="tab" id="showcase-tab-4" aria-controls="showcase-panel-4" aria-selected="false" tabindex="-1">Innholdsplattform</button>
+      </div>
+      <div class="showcase-panel is-active" role="tabpanel" id="showcase-panel-5" aria-labelledby="showcase-tab-5">
+        <h3>Ett system fra rådata til publisert innhold</h3>
+        <ol class="showcase-steps">
+          <li><span class="showcase-step-number">01</span>Data hentes automatisk fra nettsider og systemer</li>
+          <li><span class="showcase-step-number">02</span>AI systematiserer og beriker dataene</li>
+          <li><span class="showcase-step-number">03</span>Kunden bestiller det de trenger</li>
+          <li><span class="showcase-step-number">04</span>Video, annonser og organiske innlegg produseres automatisk</li>
+          <li><span class="showcase-step-number">05</span>Innholdet distribueres til riktige kanaler</li>
+        </ol>
+      </div>
+      <div class="showcase-panel" role="tabpanel" id="showcase-panel-1" aria-labelledby="showcase-tab-1" hidden>
+        <h3>Hundrevis av nye produkter klare for nettbutikken på én arbeidsdag</h3>
+        <ol class="showcase-steps">
+          <li><span class="showcase-step-number">01</span>Produktdata hentes automatisk fra leverandørene, via API eller direkte fra nettsidene deres</li>
+          <li><span class="showcase-step-number">02</span>AI-agenten systematiserer produktdataene, tilpasser bildene og skriver titler, SEO-tekster og kategorier</li>
+          <li><span class="showcase-step-number">03</span>Produktene ligger klare i nettbutikken, samme dag</li>
+        </ol>
+      </div>
+      <div class="showcase-panel" role="tabpanel" id="showcase-panel-2" aria-labelledby="showcase-tab-2" hidden>
+        <h3>Hundrevis av bilder per oppdrag, redigert i fotografens egen stil</h3>
+        <ol class="showcase-steps">
+          <li><span class="showcase-step-number">01</span>Fotografen laster opp bildene fra oppdraget</li>
+          <li><span class="showcase-step-number">02</span>AI har lært fotografens stil og redigerer farger, lys og kontrast på samme måte</li>
+          <li><span class="showcase-step-number">03</span>Alle bildene er ferdig redigert og klare til levering</li>
+        </ol>
+      </div>
+      <div class="showcase-panel" role="tabpanel" id="showcase-panel-3" aria-labelledby="showcase-tab-3" hidden>
+        <h3>Hundrevis av videoer levert, rett fra maler</h3>
+        <ol class="showcase-steps">
+          <li><span class="showcase-step-number">01</span>En ny vare, et nytt tilbud eller et nytt sted skal markedsføres</li>
+          <li><span class="showcase-step-number">02</span>Video og annonser lages automatisk fra maler</li>
+          <li><span class="showcase-step-number">03</span>Innholdet er publisert og klart til bruk</li>
+        </ol>
+      </div>
+      <div class="showcase-panel" role="tabpanel" id="showcase-panel-4" aria-labelledby="showcase-tab-4" hidden>
+        <h3>Tusenvis av bransjenyheter vurdert, de beste klare som innlegg</h3>
+        <ol class="showcase-steps">
+          <li><span class="showcase-step-number">01</span>Nyheter fra bransjen hentes automatisk fra relevante nettkilder</li>
+          <li><span class="showcase-step-number">02</span>AI vurderer hver sak og setter opp en prioritert liste hver morgen</li>
+          <li><span class="showcase-step-number">03</span>Redaktøren skriver, kunden godkjenner, og innleggene publiseres i sosiale medier</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Approach -->
+<section class="approach" id="om-oss">
+  <div class="container">
+    <div class="approach-grid">
+      <div class="approach-text fade-in">
+        <div class="section-label">Hvorfor oss</div>
+        <h2 class="section-title">Vi lager innholdet og bygger verktøyene</h2>
+        <p class="section-desc">De fleste byråer gjør det ene eller det andre. Vi produserer video, foto og tekst, og bygger AI-agentene og appene som gjør jobben raskere. Du slipper å koordinere flere leverandører.</p>
+        <div class="approach-values">
+          <div class="value-item">
+            <div class="value-num">01</div>
+            <div class="value-content">
+              <h4>Kreativitet og teknologi henger sammen</h4>
+              <p>Idé, produksjon og automatisering planlegges samtidig, så det du lager én gang kan brukes hundre ganger.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-num">02</div>
+            <div class="value-content">
+              <h4>Laget for din arbeidsflyt</h4>
+              <p>Agentene og appene bygges rundt måten dere jobber på, ikke omvendt. Du får verktøy som passer, ikke et standardabonnement.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-num">03</div>
+            <div class="value-content">
+              <h4>Kunder som blir</h4>
+              <p>Vi er direkte, tilgjengelige og tar ansvar for at ting virker. Noen kunder har jobbet med oss i over ti år.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="approach-visual fade-in">
+        <div class="stat-card">
+          <div class="stat-number">25+</div>
+          <div class="stat-label">År med digital erfaring</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">200+</div>
+          <div class="stat-label">Gjennomførte prosjekter</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">1&nbsp;000+</div>
+          <div class="stat-label">Kampanjer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust / Clients -->
+<section class="trust grid-bg" id="kunder">
+  <div class="container">
+    <div class="trust-header fade-in">
+      <div class="section-label">Kunder</div>
+      <h2 class="section-title">Fra nasjonale merkevarer til ambisiøse spesialister</h2>
+      <p class="section-desc">Vi har jobbet for mange av Norges største merkevarer, og for mindre bedrifter med store ambisjoner. Her er et lite utvalg.</p>
+    </div>
+    <div class="trust-logos fade-in">
+      <img src="assets/kunder/nrk.png" alt="NRK" class="trust-logo">
+      <img src="assets/kunder/posten-norge.png" alt="Posten Norge" class="trust-logo">
+      <img src="assets/kunder/aktiv-eiendom.png" alt="Aktiv Eiendom" class="trust-logo">
+      <img src="assets/kunder/vvskupp.svg" alt="VVSkupp" class="trust-logo">
+    </div>
+    <div class="client-marquee" id="clientMarquee" aria-label="Kunder vi har jobbet for"></div>
+    <div class="testimonial fade-in">
+      <blockquote>Acento Finance har jobbet med Mogens som leder av Pixelhospitalet AS i over 10 år. Vi har gjennomført en rekke suksessrike prosjekter sammen, Mogens er alltid 100% «på», dedikert, løsningsorientert og veldig serviceminded. Vi har erfart at han har en evne til å se ting strategisk, samt med et innovativt blikk på effektiv utnyttelse av nye løsninger i markedet. Forøvrig er han en enkelt person å jobbe med, sosial og kommer godt overens med alle kontaktflater i vårt selskap. Jeg kan gi han mine varmeste anbefalinger.</blockquote>
+      <div class="testimonial-author">Christian Gårdsmoen</div>
+      <div class="testimonial-role">Co-founder and Partner, Bridge Capital AS</div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="kontakt">
+  <div class="container">
+    <div class="fade-in">
+      <div class="section-label">Kontakt</div>
+      <h2 class="section-title">Klar for å ta neste steg?</h2>
+      <p class="section-desc">Vi starter gjerne med en uforpliktende samtale om hvordan AI og digital markedsføring kan skape verdi for din bedrift.</p>
+      <form class="contact-form" id="contactForm" action="kontakt.php" method="post" novalidate>
+        <div class="contact-form-grid">
+          <div class="contact-field">
+            <label for="cf-navn">Navn</label>
+            <input id="cf-navn" name="navn" type="text" autocomplete="name" maxlength="100" required>
+          </div>
+          <div class="contact-field">
+            <label for="cf-epost">E-post</label>
+            <input id="cf-epost" name="epost" type="email" autocomplete="email" maxlength="200" required>
+          </div>
+          <div class="contact-field">
+            <label for="cf-telefon">Telefon <span class="optional">(valgfritt)</span></label>
+            <input id="cf-telefon" name="telefon" type="tel" autocomplete="tel" maxlength="50">
+          </div>
+          <div class="contact-field">
+            <label for="cf-firma">Firma <span class="optional">(valgfritt)</span></label>
+            <input id="cf-firma" name="firma" type="text" autocomplete="organization" maxlength="100">
+          </div>
+          <div class="contact-field full">
+            <label for="cf-melding">Melding</label>
+            <textarea id="cf-melding" name="melding" maxlength="5000" required></textarea>
+          </div>
+        </div>
+        <div class="contact-honeypot" aria-hidden="true">
+          <label for="cf-nettsted">Ikke fyll ut dette feltet</label>
+          <input id="cf-nettsted" name="nettsted" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="ts" id="cf-ts" value="">
+        <div class="contact-form-footer">
+          <p class="contact-privacy">Vi bruker opplysningene bare til å svare deg.</p>
+          <button type="submit" class="btn-primary">
+            Send henvendelse
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </form>
+      <p class="contact-status" id="contactStatus" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 Pixelhospitalet AS — Video &middot; Innhold &middot; Automatisering</p>
+</footer>
+
+<!-- Scripts -->
+<script>
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Løsninger vi har bygget: faner som bytter automatisk (7s, samme som CSS)
+  (() => {
+    const showcase = document.getElementById('showcase');
+    if (!showcase) return;
+    const tabs = [...showcase.querySelectorAll('[role="tab"]')];
+    const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const INTERVAL = 7000;
+    let current = 0, timer = null, remaining = INTERVAL, startedAt = 0;
+    let hovering = false, focused = false, visible = false;
+
+    function select(index, moveFocus) {
+      tabs[current].setAttribute('aria-selected', 'false');
+      tabs[current].tabIndex = -1;
+      panels[current].hidden = true;
+      panels[current].classList.remove('is-active');
+      current = (index + tabs.length) % tabs.length;
+      tabs[current].setAttribute('aria-selected', 'true');
+      tabs[current].tabIndex = 0;
+      panels[current].hidden = false;
+      panels[current].classList.add('is-active');
+      if (moveFocus) tabs[current].focus();
+      restart();
+    }
+
+    function stop() { clearTimeout(timer); timer = null; }
+    function run() {
+      stop();
+      startedAt = Date.now();
+      timer = setTimeout(() => select(current + 1), remaining);
+    }
+    function restart() {
+      if (reducedMotion) return;
+      stop();
+      remaining = INTERVAL;
+      // Start tidslinjen på nytt
+      showcase.classList.remove('is-running');
+      void showcase.offsetWidth;
+      showcase.classList.add('is-running');
+      update();
+    }
+    function update() {
+      if (reducedMotion) return;
+      const paused = hovering || focused || !visible;
+      showcase.classList.toggle('is-paused', paused);
+      if (paused) {
+        if (timer) { remaining -= Date.now() - startedAt; stop(); }
+      } else if (!timer) {
+        run();
+      }
+    }
+
+    // Gi alle panelene samme høyde, så siden ikke hopper når fanene bytter
+    function equalizeHeights() {
+      panels.forEach(p => { p.style.minHeight = ''; });
+      let max = 0;
+      panels.forEach(p => {
+        const wasHidden = p.hidden;
+        p.hidden = false;
+        max = Math.max(max, p.offsetHeight);
+        p.hidden = wasHidden;
+      });
+      panels.forEach(p => { p.style.minHeight = max + 'px'; });
+    }
+    equalizeHeights();
+    window.addEventListener('resize', equalizeHeights);
+    if (document.fonts) document.fonts.ready.then(equalizeHeights);
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); select(current + 1, true); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); select(current - 1, true); }
+      });
+    });
+    showcase.addEventListener('mouseenter', () => { hovering = true; update(); });
+    showcase.addEventListener('mouseleave', () => { hovering = false; update(); });
+    showcase.addEventListener('focusin', () => { focused = true; update(); });
+    showcase.addEventListener('focusout', e => {
+      if (!showcase.contains(e.relatedTarget)) { focused = false; update(); }
+    });
+    new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      update();
+    }, { threshold: 0.3 }).observe(showcase);
+
+    restart();
+  })();
+
+  // Kontaktskjema: sendes til kontakt.php (mottakeren står bare i PHP-filen)
+  (() => {
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('contactStatus');
+    if (!form || !status) return;
+    const button = form.querySelector('button[type="submit"]');
+    const SUCCESS = 'Takk! Vi svarer deg så snart vi kan.';
+    const ERROR = 'Beklager, noe gikk galt. Prøv igjen om litt.';
+    document.getElementById('cf-ts').value = Math.floor(Date.now() / 1000);
+
+    function show(text, ok) {
+      status.textContent = text;
+      status.className = 'contact-status ' + (ok ? 'ok' : 'error');
+      if (ok) form.hidden = true;
+    }
+
+    // Svar etter innsending uten JS (kontakt.php sender tilbake med ?sendt=1 eller ?feil=1)
+    const params = new URLSearchParams(location.search);
+    if (params.has('sendt')) show(SUCCESS, true);
+    else if (params.has('feil')) show(ERROR, false);
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      button.disabled = true;
+      status.textContent = '';
+      status.className = 'contact-status';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) show(SUCCESS, true);
+        else show(data.melding || ERROR, false);
+      } catch (err) {
+        show(ERROR, false);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  })();
+
+  // Kundeliste som glir i to rader (rediger listen her)
+  const clients = [
+    'Acento Finance', 'Aftenposten', 'Akershus Eiendom', 'Aktiv Eiendom',
+    'Arbeidsmiljøsenteret', 'Askim & Mysen Rør', 'Bilbutikk1', 'Bolig & Eiendomsutvikling', 'Byggfakta', 'Bygghjemme',
+    'Carsten O. Five', 'Dagligvarehandelen', 'DNB', 'Innsamlingskontrollen',
+    'Norges Eiendomsmeglerforbund', 'Moss Transportforum', 'Nestlé', 'Norefjell Spa & Ski',
+    'Norges Lastebileierforbund', 'NRK', 'Olimb Rørfornying', 'Opplysningen 1881', 'Reklamasjonsnemnda for Eiendomsmeglingstjenester',
+    'Posten Norge', 'Setten Hyttepark', 'SpareBank 1', 'Stiansen Eiendom', 'Tannfeen',
+    'Tegneby & Grønnerød Landbruksmegling', 'Teknoinvest', 'Telenor', 'Temp Team',
+    'TrioVing', 'VVSkupp', 'Yrkestrafikkforbundet'
+  ];
+  (() => {
+    const marquee = document.getElementById('clientMarquee');
+    const rows = [clients.filter((_, i) => i % 2 === 0), clients.filter((_, i) => i % 2 === 1)];
+    rows.forEach((names, r) => {
+      const row = document.createElement('div');
+      row.className = 'marquee-row' + (r === 1 ? ' reverse' : '');
+      for (let copy = 0; copy < 2; copy++) {
+        const group = document.createElement(copy === 0 ? 'ul' : 'div');
+        group.className = 'marquee-group';
+        if (copy === 1) group.setAttribute('aria-hidden', 'true');
+        names.forEach(name => {
+          const item = document.createElement(copy === 0 ? 'li' : 'span');
+          item.className = 'marquee-item';
+          item.textContent = name;
+          group.appendChild(item);
+        });
+        row.appendChild(group);
+      }
+      marquee.appendChild(row);
+    });
+  })();
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('navLinks').classList.remove('open');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

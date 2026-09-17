@@ -1,0 +1,8 @@
+# Offentlig repo: bare det som trengs for å se nettsiden.
+# Alt annet (interne notater, kilder, backup, PHP med e-postadresse, publiseringsskript) holdes utenfor.
+*
+!.gitignore
+!index.html
+!assets/
+!assets/**
+.DS_Store
