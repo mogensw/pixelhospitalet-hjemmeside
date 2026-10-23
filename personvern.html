@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personvern og cookies — Pixelhospitalet</title>
+<link rel="icon" href="assets/favicon/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" href="assets/favicon/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+<style>
+  /* Fonter og farger som i index.html */
+  @font-face {
+    font-family: 'Work Sans';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url('assets/fonts/work-sans-latin.woff2') format('woff2');
+  }
+  :root {
+    --blue: #00589A;
+    --green: #7FCC2B;
+    --navy: #002D50;
+    --charcoal: #2D3748;
+    --slate: #52606D;
+    --cloud: #E2E8F0;
+    --snow: #F7FAFC;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--charcoal);
+    line-height: 1.6;
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav { border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo { height: 36px; display: block; }
+  .nav-back { font-size: 14px; font-weight: 500; color: var(--blue); text-decoration: none; }
+  .nav-back:hover { text-decoration: underline; }
+
+  main { max-width: 760px; margin: 0 auto; padding: 64px 32px 96px; }
+  h1 { font-size: 40px; font-weight: 600; color: var(--navy); line-height: 1.2; margin-bottom: 16px; }
+  .updated { font-size: 14px; color: var(--slate); margin-bottom: 48px; }
+  h2 { font-size: 22px; font-weight: 600; color: var(--navy); margin: 48px 0 12px; }
+  p, li { font-size: 16px; color: var(--slate); }
+  p + p { margin-top: 12px; }
+  ul { margin: 12px 0 0 20px; }
+  li + li { margin-top: 6px; }
+  a { color: var(--blue); }
+  strong { color: var(--charcoal); font-weight: 600; }
+
+  .table-wrap { margin-top: 16px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--cloud); color: var(--slate); }
+  th { color: var(--charcoal); font-weight: 600; background: var(--snow); }
+  td code { font-size: 13px; color: var(--charcoal); }
+
+  footer { background: var(--navy); padding: 32px; text-align: center; }
+  footer p { font-size: 13px; color: rgba(255,255,255,0.3); }
+
+  :focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+  @media (max-width: 768px) {
+    .nav-inner { padding: 14px 20px; }
+    main { padding: 40px 20px 64px; }
+    h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="./"><img src="assets/logo/pixelhospitalet-logo.png" alt="Pixelhospitalet – til forsiden" class="nav-logo"></a>
+    <a href="./" class="nav-back">Til forsiden</a>
+  </div>
+</nav>
+
+<main>
+  <h1>Personvern og cookies</h1>
+  <p class="updated">Sist oppdatert 23. oktober 2026</p>
+
+  <p>Her står hvilke opplysninger vi samler inn når du besøker pht.no, hva vi bruker dem til og hvilke rettigheter du har.</p>
+
+  <h2>Behandlingsansvarlig</h2>
+  <p>Pixelhospitalet AS (org.nr. 984 112 904) er ansvarlig for behandlingen av personopplysninger på dette nettstedet. Du når oss via <a href="./#kontakt">kontaktskjemaet</a>.</p>
+
+  <h2>Kontaktskjemaet</h2>
+  <p>Når du sender inn kontaktskjemaet, får vi navnet, e-postadressen og meldingen din (og firma og telefon hvis du fyller dem inn). Henvendelsen sendes til oss som e-post og lagres ikke på nettstedet. Vi bruker opplysningene bare til å svare deg. Grunnlaget er vår berettigede interesse i å svare på henvendelser (GDPR art. 6 nr. 1 bokstav f). Henvendelser som ikke fører til et oppdrag, slettes når saken er avsluttet.</p>
+  <p>For å stoppe spam lagrer serveren en hash (en enveis omkoding) av IP-adressen sammen med tidspunktet for innsendingen. Den brukes bare til å begrense antall innsendinger per time.</p>
+
+  <h2>Cookies</h2>
+  <p>En cookie er en liten tekstfil som lagres i nettleseren din. pht.no setter ingen cookies med mindre du har sagt ja. Valget ditt lagres i nettleseren (localStorage) under navnet <code>pht-samtykke</code>, slik at vi ikke spør på hvert besøk. Den lagringen er nødvendig og krever ikke samtykke. Du blir spurt på nytt etter 12 måneder.</p>
+  <p>Med ditt samtykke kan vi bruke disse verktøyene:</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Kategori</th><th>Leverandør</th><th>Cookies</th><th>Formål</th><th>Levetid</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Statistikk</td>
+          <td>Google Analytics 4 (Google Ireland Ltd.)</td>
+          <td><code>_ga</code>, <code>_ga_*</code></td>
+          <td>Viser hvordan siden brukes: hvilke sider som besøkes, hvor besøkende kommer fra og hvilken enhet de bruker.</td>
+          <td>Inntil 2 år</td>
+        </tr>
+        <tr>
+          <td>Markedsføring</td>
+          <td>Meta-piksel (Meta Platforms Ireland Ltd.)</td>
+          <td><code>_fbp</code>, <code>_fbc</code></td>
+          <td>Måler effekten av annonsene våre og lar oss vise annonser til personer som har besøkt siden.</td>
+          <td>3 måneder</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px">Google og Meta kan overføre opplysninger til USA. Begge er sertifisert under EU–US Data Privacy Framework.</p>
+
+  <h2>Slik endrer du samtykket</h2>
+  <p>Klikk «Cookie-innstillinger» nederst på forsiden. Trekker du samtykket tilbake, slettes cookiene fra verktøyene over. Du kan også slette cookies og lagrede data i innstillingene i nettleseren.</p>
+
+  <h2>Fonter og webhotell</h2>
+  <p>Fontene ligger på vår egen server, så ingen opplysninger sendes til Google Fonts. Nettstedet driftes hos Domeneshop AS i Norge, som lagrer vanlige serverlogger (blant annet IP-adresse og tidspunkt) for drift og sikkerhet.</p>
+
+  <h2>Rettighetene dine</h2>
+  <p>Du kan be om innsyn i, retting av eller sletting av opplysningene vi har om deg, og protestere mot behandlingen. Ta kontakt via <a href="./#kontakt">kontaktskjemaet</a>. Mener du at vi behandler personopplysninger i strid med regelverket, kan du klage til <a href="https://www.datatilsynet.no/">Datatilsynet</a>.</p>
+</main>
+
+<footer>
+  <p>&copy; 2026 Pixelhospitalet AS — Video &middot; Innhold &middot; Automatisering</p>
+</footer>
+
+</body>
+</html>

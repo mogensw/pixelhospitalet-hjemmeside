@@ -7,8 +7,31 @@
 <link rel="icon" href="assets/favicon/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" type="image/png" href="assets/favicon/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Jura:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/work-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  /* Fontene ligger lokalt (variable fonter fra Google Fonts), så ingen IP-adresser sendes til Google */
+  @font-face {
+    font-family: 'Work Sans';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url('assets/fonts/work-sans-latin.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Work Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/work-sans-italic-latin.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Jura';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('assets/fonts/jura-latin.woff2') format('woff2');
+  }
+
   :root {
     --blue: #00589A;
     --green: #7FCC2B;
@@ -673,6 +696,80 @@
     font-size: 13px;
     color: rgba(255,255,255,0.3);
   }
+  .footer-links { margin-top: 8px; display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 20px; }
+  .footer-links a, .footer-links button {
+    font: inherit;
+    color: rgba(255,255,255,0.6);
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .footer-links a:hover, .footer-links button:hover { color: var(--white); text-decoration: underline; }
+
+  /* ─── Samtykke til cookies ──────────────────── */
+  .consent {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    left: 24px;
+    z-index: 200;
+    max-width: 560px;
+    margin-left: auto;
+    padding: 24px 28px;
+    background: var(--white);
+    color: var(--charcoal);
+    border-top: 4px solid var(--green);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0,45,80,0.18);
+    animation: consentIn 0.3s ease;
+  }
+  .consent[hidden], .consent [hidden] { display: none; }
+  .consent-title { font-size: 17px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+  .consent-text { font-size: 14px; color: var(--slate); line-height: 1.55; }
+  .consent-text a { color: var(--blue); }
+  .consent-options { margin-top: 16px; display: grid; gap: 12px; }
+  .consent-option { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--slate); line-height: 1.45; cursor: pointer; }
+  .consent-option input { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; accent-color: var(--blue); }
+  .consent-option strong { display: block; color: var(--charcoal); font-weight: 600; }
+  .consent-actions { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  /* «Godta alle» og «Bare nødvendige» skal være like synlige */
+  .consent-btn {
+    padding: 11px 20px;
+    background: var(--blue);
+    color: var(--white);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .consent-btn:hover { background: var(--navy); }
+  .consent-link {
+    padding: 11px 4px;
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .consent button:focus-visible, .consent a:focus-visible, .footer-links :focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  @keyframes consentIn {
+    from { opacity: 0; transform: translateY(12px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .consent { animation: none; }
+  }
+  @media (max-width: 768px) {
+    .consent { right: 12px; bottom: 12px; left: 12px; padding: 20px; }
+    .consent-btn, .consent-link { flex: 1 1 100%; }
+  }
 
   /* ─── Animations ────────────────────────────── */
   @keyframes fadeInUp {
@@ -771,6 +868,24 @@
 </style>
 </head>
 <body>
+
+<!-- Samtykke til cookies: vises bare når GA_ID eller META_PIXEL_ID er satt i scriptet nederst.
+     Ligger først i DOM-en, så tastaturbrukere kommer hit først. -->
+<div class="consent" id="consent" role="dialog" aria-labelledby="consentTitle" aria-describedby="consentText" hidden>
+  <h2 class="consent-title" id="consentTitle">Cookies på pht.no</h2>
+  <p class="consent-text" id="consentText">Vi bruker cookies til <span id="consentPurposes">statistikk og markedsføring</span> bare hvis du sier ja. Du kan endre valget når som helst under «Cookie-innstillinger» nederst på siden. <a href="personvern.html">Les mer om personvern og cookies</a></p>
+  <div class="consent-options" id="consentOptions" hidden>
+    <label class="consent-option"><input type="checkbox" checked disabled><span><strong>Nødvendige</strong>Lagrer valget ditt i nettleseren. Alltid på.</span></label>
+    <label class="consent-option" data-kategori="statistikk"><input type="checkbox" name="statistikk"><span><strong>Statistikk</strong>Google Analytics viser oss hvordan siden brukes.</span></label>
+    <label class="consent-option" data-kategori="markedsforing"><input type="checkbox" name="markedsforing"><span><strong>Markedsføring</strong>Meta-pikselen måler og tilpasser annonsene våre.</span></label>
+  </div>
+  <div class="consent-actions">
+    <button type="button" class="consent-btn" data-valg="alle">Godta alle</button>
+    <button type="button" class="consent-btn" data-valg="nodvendige">Bare nødvendige</button>
+    <button type="button" class="consent-link" data-valg="tilpass" aria-expanded="false" aria-controls="consentOptions">Tilpass</button>
+    <button type="button" class="consent-btn" data-valg="lagre" hidden>Lagre valg</button>
+  </div>
+</div>
 
 <!-- Navigation -->
 <nav id="nav">
@@ -1032,10 +1147,136 @@
 <!-- Footer -->
 <footer>
   <p>&copy; 2026 Pixelhospitalet AS — Video &middot; Innhold &middot; Automatisering</p>
+  <p class="footer-links">
+    <a href="personvern.html">Personvern og cookies</a>
+    <button type="button" id="consentSettings" hidden>Cookie-innstillinger</button>
+  </p>
 </footer>
 
 <!-- Scripts -->
 <script>
+  // Samtykke til cookies. Google Analytics og Meta-piksel lastes bare etter samtykke.
+  // Legg inn ID-ene her. Er begge tomme, vises verken banneret eller «Cookie-innstillinger».
+  const GA_ID = '';          // Google Analytics 4, f.eks. 'G-XXXXXXXXXX'
+  const META_PIXEL_ID = '';  // Meta-piksel, f.eks. '123456789012345'
+  (() => {
+    const KEY = 'pht-samtykke';
+    const VERSION = 1;  // øk når nye verktøy legges til, så alle blir spurt på nytt
+    const MAX_AGE = 365 * 24 * 60 * 60 * 1000;
+    const ga = GA_ID;
+    const meta = META_PIXEL_ID;
+    if (!ga && !meta) return;
+
+    const banner = document.getElementById('consent');
+    const options = document.getElementById('consentOptions');
+    const box = name => banner.querySelector(`input[name="${name}"]`);
+    const button = valg => banner.querySelector(`[data-valg="${valg}"]`);
+    const loaded = {};
+
+    banner.querySelector('[data-kategori="statistikk"]').hidden = !ga;
+    banner.querySelector('[data-kategori="markedsforing"]').hidden = !meta;
+    document.getElementById('consentPurposes').textContent = [ga && 'statistikk', meta && 'markedsføring'].filter(Boolean).join(' og ');
+
+    function read() {
+      try {
+        const c = JSON.parse(localStorage.getItem(KEY));
+        if (c && c.v === VERSION && Date.now() - new Date(c.dato).getTime() < MAX_AGE) return c;
+      } catch (e) {}
+      return null;
+    }
+
+    function save(c) {
+      try { localStorage.setItem(KEY, JSON.stringify({ v: VERSION, ...c, dato: new Date().toISOString() })); } catch (e) {}
+    }
+
+    function loadScript(src) {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = src;
+      document.head.appendChild(s);
+    }
+
+    function loadGA(c) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      const ads = c.markedsforing ? 'granted' : 'denied';
+      gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: ads, ad_user_data: ads, ad_personalization: ads });
+      gtag('js', new Date());
+      gtag('config', ga);
+      loadScript('https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga));
+    }
+
+    function loadMeta() {
+      const fbq = window.fbq = function () { fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments); };
+      window._fbq = fbq;
+      fbq.push = fbq;
+      fbq.loaded = true;
+      fbq.version = '2.0';
+      fbq.queue = [];
+      loadScript('https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', meta);
+      fbq('track', 'PageView');
+    }
+
+    function apply(c) {
+      if (c.statistikk && ga && !loaded.ga) { loaded.ga = true; loadGA(c); }
+      if (c.markedsforing && meta && !loaded.meta) { loaded.meta = true; loadMeta(); }
+    }
+
+    // Sletter cookies fra kategorier uten samtykke, også fra tidligere besøk
+    function deleteCookies(c) {
+      const patterns = [];
+      if (!c.statistikk) patterns.push(/^(_ga|_gid|_gat)/);
+      if (!c.markedsforing) patterns.push(/^(_fbp|_fbc)$/);
+      const domains = ['', location.hostname, '.' + location.hostname.replace(/^www\./, '')];
+      document.cookie.split(';').map(s => s.split('=')[0].trim())
+        .filter(name => patterns.some(p => p.test(name)))
+        .forEach(name => domains.forEach(d => {
+          document.cookie = `${name}=; Max-Age=0; path=/${d ? '; domain=' + d : ''}`;
+        }));
+    }
+
+    function choose(c) {
+      save(c);
+      banner.hidden = true;
+      deleteCookies(c);
+      // Skript som alt er lastet kan ikke skrus av, så siden lastes på nytt når samtykke trekkes tilbake
+      if ((loaded.ga && !c.statistikk) || (loaded.meta && !c.markedsforing)) return location.reload();
+      apply(c);
+    }
+
+    function show(customize) {
+      const c = read() || { statistikk: false, markedsforing: false };
+      box('statistikk').checked = c.statistikk;
+      box('markedsforing').checked = c.markedsforing;
+      options.hidden = !customize;
+      button('tilpass').hidden = customize;
+      button('tilpass').setAttribute('aria-expanded', String(customize));
+      button('lagre').hidden = !customize;
+      banner.hidden = false;
+    }
+
+    button('alle').addEventListener('click', () => choose({ statistikk: !!ga, markedsforing: !!meta }));
+    button('nodvendige').addEventListener('click', () => choose({ statistikk: false, markedsforing: false }));
+    button('lagre').addEventListener('click', () => choose({ statistikk: box('statistikk').checked, markedsforing: box('markedsforing').checked }));
+    button('tilpass').addEventListener('click', () => {
+      show(true);
+      banner.querySelector('.consent-option:not([hidden]) input:not([disabled])').focus();
+    });
+
+    const settings = document.getElementById('consentSettings');
+    settings.hidden = false;
+    settings.addEventListener('click', () => {
+      show(true);
+      banner.querySelector('.consent-option:not([hidden]) input:not([disabled])').focus();
+    });
+
+    const saved = read();
+    if (saved) apply(saved);
+    else show(false);
+  })();
+
   // Nav scroll effect
   window.addEventListener('scroll', () => {
     document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
