@@ -545,15 +545,24 @@
     .marquee-group { flex-wrap: wrap; justify-content: center; row-gap: 8px; }
     .marquee-group[aria-hidden="true"] { display: none; }
   }
-  .testimonial {
-    max-width: 720px;
+  .testimonials {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    max-width: 1040px;
     margin: 0 auto;
+    text-align: left;
+  }
+  .testimonial {
+    display: flex;
+    flex-direction: column;
     padding: 40px;
     background: var(--white);
     border-radius: 12px;
     border: 1px solid rgba(0,0,0,0.04);
   }
   .testimonial blockquote {
+    flex: 1;
     font-size: 17px;
     font-style: italic;
     color: var(--charcoal);
@@ -721,9 +730,9 @@
     .hero-cta-group a { justify-content: center; }
     .scroll-hint { display: none; }
     .service-list li { font-size: 15px; }
-    .testimonial { padding: 28px 22px; text-align: left; }
+    .testimonials { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .testimonial { padding: 28px 22px; }
     .testimonial blockquote { font-size: 16px; }
-    .testimonial-author, .testimonial-role { text-align: left; }
     .services-grid { grid-template-columns: 1fr; }
     .approach-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
     .approach-visual { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -957,10 +966,17 @@
       <img src="assets/kunder/vvskupp.svg" alt="VVSkupp" class="trust-logo">
     </div>
     <div class="client-marquee" id="clientMarquee" aria-label="Kunder vi har jobbet for"></div>
+    <div class="testimonials">
+    <div class="testimonial fade-in">
+      <blockquote>Siden oppstarten her i Moss Transportforum har jeg hatt gleden av å jobbe tett med Mogens Stoltz Wennersten, og er svært imponert over både kompetansen og gjennomføringsevnen hans. Han ligger alltid et steg foran når det gjelder nye verktøy og digitale løsninger, og har vært en viktig drivkraft i å ta i bruk KI og automatisering for å jobbe smartere og mer effektivt med markedsføring. Mogens kombinerer strategisk rådgivning innen merkevarebygging, med innovasjon med høy kvalitet i leveransene, og er en stor og viktig ressurs for oss.</blockquote>
+      <div class="testimonial-author">Jens Aardalsbakke</div>
+      <div class="testimonial-role">Managing Director, Moss Transportforum</div>
+    </div>
     <div class="testimonial fade-in">
       <blockquote>Acento Finance har jobbet med Mogens som leder av Pixelhospitalet AS i over 10 år. Vi har gjennomført en rekke suksessrike prosjekter sammen, Mogens er alltid 100% «på», dedikert, løsningsorientert og veldig serviceminded. Vi har erfart at han har en evne til å se ting strategisk, samt med et innovativt blikk på effektiv utnyttelse av nye løsninger i markedet. Forøvrig er han en enkelt person å jobbe med, sosial og kommer godt overens med alle kontaktflater i vårt selskap. Jeg kan gi han mine varmeste anbefalinger.</blockquote>
       <div class="testimonial-author">Christian Gårdsmoen</div>
       <div class="testimonial-role">Co-founder and Partner, Bridge Capital AS</div>
+    </div>
     </div>
   </div>
 </section>
