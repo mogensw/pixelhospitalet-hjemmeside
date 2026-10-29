@@ -1158,10 +1158,10 @@
   // Samtykke til cookies. Google Analytics og Meta-piksel lastes bare etter samtykke.
   // Legg inn ID-ene her. Er begge tomme, vises verken banneret eller «Cookie-innstillinger».
   const GA_ID = 'G-GBWF4HB3EP';  // Google Analytics 4, eiendommen «pht.no» i kontoen Pixelhospitalet
-  const META_PIXEL_ID = '';  // Meta-piksel, f.eks. '123456789012345'
+  const META_PIXEL_ID = '2280462720019178';  // Meta-piksel, datasettet «Pikselen til PHT.no»
   (() => {
     const KEY = 'pht-samtykke';
-    const VERSION = 1;  // øk når nye verktøy legges til, så alle blir spurt på nytt
+    const VERSION = 2;  // øk når nye verktøy legges til, så alle blir spurt på nytt
     const MAX_AGE = 365 * 24 * 60 * 60 * 1000;
     const ga = GA_ID;
     const meta = META_PIXEL_ID;
