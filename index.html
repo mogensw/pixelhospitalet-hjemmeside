@@ -1240,6 +1240,9 @@
     function choose(c) {
       save(c);
       banner.hidden = true;
+      // Stopp skript som alt er lastet fra å skrive cookies på nytt før de slettes
+      if (loaded.ga && !c.statistikk) gtag('consent', 'update', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      if (loaded.meta && !c.markedsforing) fbq('consent', 'revoke');
       deleteCookies(c);
       // Skript som alt er lastet kan ikke skrus av, så siden lastes på nytt når samtykke trekkes tilbake
       if ((loaded.ga && !c.statistikk) || (loaded.meta && !c.markedsforing)) return location.reload();
@@ -1273,8 +1276,10 @@
     });
 
     const saved = read();
-    if (saved) apply(saved);
-    else show(false);
+    if (saved) {
+      deleteCookies(saved);  // rydder rester etter et samtykke som er trukket tilbake
+      apply(saved);
+    } else show(false);
   })();
 
   // Nav scroll effect
